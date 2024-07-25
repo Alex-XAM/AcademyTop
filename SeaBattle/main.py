@@ -3,7 +3,7 @@ from impl import *
 N = 10  # размер стороны игрового поля
 fields = init_fields(2, N)
 
-fields[0][3][5] = 1
+# fields[0][0][0] = 1 # Проверка на соприкосновение кораблей
 draw_fields(fields)
 
 # Добавляем корабль

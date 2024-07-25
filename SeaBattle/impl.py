@@ -34,6 +34,7 @@ def draw_fields(fields):
                 print(get_cell_symbol(fields[k][i][j]), end=' '*SPACE_CELLS if j < N - 1 else '')
             print(end=' '*SPACE_FIELDS if k < len(fields) - 1 else '')
         print()
+    print()
 
 
 def coord_utoa(vert, horiz):
@@ -48,5 +49,30 @@ def coord_atou(i, j):
 
 
 def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool) -> bool:
-    return False
-
+    i, j = coord_utoa(*head_coord)
+    ship_stern = j + ship_len if is_horizontal else i + ship_len
+    N = len(field)
+    if ship_stern > N:
+        print('Неудача! Корабль вышел за пределы игрового поля.')
+        return False
+    else:
+        ship_coord = {}
+        for _ in range(ship_len):
+            lst_contact_coord = []
+            for n in range(i - 1, i + 2):
+                for m in range(j - 1, j + 2):
+                    if (n, m) != (i, j) and 0 <= n < N and 0 <= m < N:
+                        lst_contact_coord.append((n, m))
+            for n, m in lst_contact_coord:
+                if field[n][m] != 0:
+                    print('Неудача! Корабли не могут соприкасаться.')
+                    return False
+            ship_coord[(i, j)] = ship_len
+            if is_horizontal:
+                j += 1
+            else:
+                i += 1
+    for coord, ship_type in ship_coord.items():
+        i, j = coord
+        field[i][j] = ship_type
+    return True
