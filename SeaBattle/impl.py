@@ -1,4 +1,10 @@
 def init_fields(fields_number, side):
+    """Создаёт два игровых поля и заполняет все ячейки нулями.
+
+    :param fields_number: Количество игровых полей
+    :param side: Размер стороны в игровом поле
+    :return: Возвращает список игроых полей
+    """
     fields = []
     for k in range(fields_number):
         fields.append([])
@@ -10,10 +16,20 @@ def init_fields(fields_number, side):
 
 
 def get_cell_symbol(value):
+    """Возвращает значение, которое будет отображаться на игровом поле
+
+    :param value: Значение из ячейки игрового поля
+    :return: Значение, которое будет принимать ячейка игрового поля
+    """
     return '.' if value == 0 else value
 
 
 def draw_fields(fields):
+    """Рисует в консоле игровые поля
+
+    :param fields: Список игровых полей
+    :return:
+    """
     SPACE_FIELDS = 7  # Зазор между игровыми полями по горизонтали
     SPACE_CELLS = 2   # Зазор между элементами
     N = len(fields[0])
@@ -38,6 +54,12 @@ def draw_fields(fields):
 
 
 def coord_utoa(vert, horiz):
+    """Преобразует координаты пользовательского вида в координаты массива
+
+    :param vert:
+    :param horiz:
+    :return:
+    """
     tmp = {'А': 0, 'Б': 1, 'В': 2, 'Г': 3, 'Д': 4, 'Е': 5, 'Ж': 6, 'З': 7, 'И': 8, 'К': 9}
     i = tmp[vert]
     j = horiz - 1
@@ -49,6 +71,14 @@ def coord_atou(i, j):
 
 
 def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool) -> bool:
+    """Добавляет корабль на игровое поле, если функция выполнилась успешно.
+
+    :param field: Игровое поле, на котором создаём корабль
+    :param ship_len: Количество клеток, которое занимает корабль
+    :param head_coord: Начальная координата корабля
+    :param is_horizontal: Горизонтальный или вертикальный корабль (True, False)
+    :return: True или False (успех или неудача создания корабля)
+    """
     i, j = coord_utoa(*head_coord)
     ship_stern = j + ship_len if is_horizontal else i + ship_len
     N = len(field)
