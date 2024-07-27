@@ -1,3 +1,6 @@
+from random import randint
+
+
 def init_fields(fields_number, side):
     """Создаёт два игровых поля и заполняет все ячейки нулями.
 
@@ -21,7 +24,7 @@ def get_cell_symbol(value):
     :param value: Значение из ячейки игрового поля
     :return: Значение, которое будет принимать ячейка игрового поля
     """
-    return '.' if value == 0 else value
+    return chr(183) if value == 0 else value
 
 
 def draw_fields(fields):
@@ -88,7 +91,7 @@ def coord_atou(i, j):
 def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool) -> bool:
     """Добавляет корабль на игровое поле, если функция выполнилась успешно.
 
-    :param field: Игровое поле, на котором создаём корабль
+    :param field: Игровое поле, на котором создаёт корабль
     :param ship_len: Количество клеток, которое занимает корабль
     :param head_coord: Начальная координата корабля
     :param is_horizontal: Горизонтальный или вертикальный корабль (True, False)
@@ -123,4 +126,24 @@ def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool)
     return True
 
 
+def fill_in_field(field: list, one_cell: int, two_cells: int, three_cells: int, four_cells: int):
+    """ Заполняет игровое поле кораблями
+
+    :param field: Игровое поле, которое будет заполнено кораблями
+    :param one_cell: Количество кораблей из одной клетки
+    :param two_cells: Количество кораблей из двух клеток
+    :param three_cells: Количество кораблей из трёх клеток
+    :param four_cells: Количество кораблей из четырёх клеток
+    :return:
+    """
+    ships = {1: one_cell, 2: two_cells, 3: three_cells, 4: four_cells}
+    for ship_len, number_ships in ships.items():
+        while number_ships:
+            N = len(field)
+            i_coord = randint(0, N - 1)
+            j_coord = randint(0, N - 1)
+            is_horizontal = bool(randint(0, 1))
+            if add_ship(field, ship_len, coord_atou(i_coord, j_coord), is_horizontal):
+                number_ships -= 1
+    return True
 
