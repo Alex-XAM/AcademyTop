@@ -3,7 +3,7 @@ def init_fields(fields_number, side):
 
     :param fields_number: Количество игровых полей
     :param side: Размер стороны в игровом поле
-    :return: Возвращает список игроых полей
+    :return: Список игровых полей
     """
     fields = []
     for k in range(fields_number):
@@ -25,49 +25,64 @@ def get_cell_symbol(value):
 
 
 def draw_fields(fields):
-    """Рисует в консоле игровые поля
+    """Рисует в консоли игровые поля
 
     :param fields: Список игровых полей
-    :return:
+    :return: Ничего не возвращает
     """
     SPACE_FIELDS = 7  # Зазор между игровыми полями по горизонтали
-    SPACE_CELLS = 2   # Зазор между элементами
+    CHARACTERS_IN_CELLS = 3  # Количество символов, которое занимает ячейка поля
     N = len(fields[0])
 
-    print((' ' + ' ' * SPACE_CELLS), end='')
-
     for k in range(len(fields)):
+        print(' ' * CHARACTERS_IN_CELLS, end='')
         for j in range(N):
-            print(j + 1, end=' '*SPACE_CELLS if j < N - 1 else '')
-        print(end=' ' * (SPACE_FIELDS + 2) if k < len(fields) - 1 else '')
+            print(f'{j + 1:^{CHARACTERS_IN_CELLS}}', end='')
+        print(end=' ' * SPACE_FIELDS if k < len(fields) - 1 else '')
     print()
 
     for i in range(N):
         for k in range(len(fields)):
             vert, _ = coord_atou(i, 0)
-            print(vert, end='  ')
+            print(f'{vert:^{CHARACTERS_IN_CELLS}}', end='')
             for j in range(N):
-                print(get_cell_symbol(fields[k][i][j]), end=' '*SPACE_CELLS if j < N - 1 else '')
+                print(f'{get_cell_symbol(fields[k][i][j]):^{CHARACTERS_IN_CELLS}}', end='')
             print(end=' '*SPACE_FIELDS if k < len(fields) - 1 else '')
         print()
     print()
 
 
+def get_alphabet():
+    """ Создаёт список букв русского алфавита в верхнем регистре, кроме букв Ё и Й
+
+    :return: Список букв русского алфавита
+    """
+    alphabet = [chr(i) for i in range(ord('А'), ord('А') + 32)]
+    alphabet.remove('Й')
+    return alphabet
+
+
 def coord_utoa(vert, horiz):
     """Преобразует координаты пользовательского вида в координаты массива
 
-    :param vert:
-    :param horiz:
-    :return:
+    :param vert: Координата по вертикали (буква русского алфавита в верхнем регистре: А, Б, В... )
+    :param horiz: Координата по горизонтали (цифра: 1, 2, 3...)
+    :return: Возвращает положение координаты в массиве в виде кортежа (2, 1)
     """
-    tmp = {'А': 0, 'Б': 1, 'В': 2, 'Г': 3, 'Д': 4, 'Е': 5, 'Ж': 6, 'З': 7, 'И': 8, 'К': 9}
+    tmp = {key: value for value, key in enumerate(get_alphabet())}
     i = tmp[vert]
     j = horiz - 1
     return i, j
 
 
 def coord_atou(i, j):
-    return 'АБВГДЕЖЗИК'[i], j + 1
+    """Преобразует координаты массива в координаты пользовательского вида
+
+    :param i: Координата по вертикали (цифра: 0, 1, 2...)
+    :param j: Координата по горизонтали (цифра: 0, 1, 2...)
+    :return: Возвращает положение координат пользовательского вида на игровом поле в виде кортежа ("Б", 5)
+    """
+    return get_alphabet()[i], j + 1
 
 
 def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool) -> bool:
@@ -106,3 +121,6 @@ def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool)
         i, j = coord
         field[i][j] = ship_type
     return True
+
+
+
