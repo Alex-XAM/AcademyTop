@@ -147,3 +147,7 @@ def fill_in_field(field: list, one_cell: int, two_cells: int, three_cells: int, 
                 number_ships -= 1
     return True
 
+
+def shot(field: list, coord: tuple):
+    i_coord, j_coord = coord_utoa(*coord)
+    return field[i_coord][j_coord] in [1, 2, 3, 4]

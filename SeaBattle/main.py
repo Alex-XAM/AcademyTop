@@ -17,3 +17,10 @@ if is_success:
     print('Игровое поле заполнено кораблями')
 
 draw_fields(fields)
+
+i_coord, j_coord = input('Введите координаты выстрела через пробел. Например: А 2: ').split()
+shot = shot(fields[0], (i_coord, int(j_coord)))
+if shot:
+    print('Попадание!')
+else:
+    print('Мимо.')
