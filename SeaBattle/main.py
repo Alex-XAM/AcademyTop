@@ -1,26 +1,13 @@
 from impl import *
 
+number_players = int(input('Введите количество игроков: '))
 N = 10  # размер стороны игрового поля
-fields = init_fields(2, N)
-
-# fields[0][0][0] = 1 # Проверка на соприкосновение кораблей
-draw_fields(fields)
-
-# Добавляем корабль
-# is_success = add_ship(fields[0], 2, ('А', 2), False)
-# if is_success:
-#     print('Корабль добавлен')
-
-# Заполняем игровое поле кораблями
-is_success = fill_in_field(fields[0], 4, 3, 2, 1)
-if is_success:
-    print('Игровое поле заполнено кораблями')
+fields = init_fields(number_players, N)
 
 draw_fields(fields)
 
-i_coord, j_coord = input('Введите координаты выстрела через пробел. Например: А 2: ').split()
-shot = shot(fields[0], (i_coord, int(j_coord)))
-if shot:
-    print('Попадание!')
-else:
-    print('Мимо.')
+# Заполняем игровые поля кораблями
+fill_in_fields(fields, 4, 3, 2, 1)
+print('\nКорабли готовы к бою.')
+
+start_game(fields, number_players)

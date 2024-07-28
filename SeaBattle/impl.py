@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 
 
 def init_fields(fields_number, side):
@@ -36,6 +36,12 @@ def draw_fields(fields):
     SPACE_FIELDS = 7  # Зазор между игровыми полями по горизонтали
     CHARACTERS_IN_CELLS = 3  # Количество символов, которое занимает ячейка поля
     N = len(fields[0])
+    print()
+
+    for p in range(1, len(fields) + 1):
+        player = f'player {p}'
+        print(f'{player:^{CHARACTERS_IN_CELLS * (N + 1)}}', end='')
+        print(end=' ' * SPACE_FIELDS if p <= len(fields) - 1 else '\n')
 
     for k in range(len(fields)):
         print(' ' * CHARACTERS_IN_CELLS, end='')
@@ -101,7 +107,7 @@ def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool)
     ship_stern = j + ship_len if is_horizontal else i + ship_len
     N = len(field)
     if ship_stern > N:
-        print('Неудача! Корабль вышел за пределы игрового поля.')
+        # print('Неудача! Корабль вышел за пределы игрового поля.')
         return False
     else:
         ship_coord = {}
@@ -113,7 +119,7 @@ def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool)
                         lst_contact_coord.append((n, m))
             for n, m in lst_contact_coord:
                 if field[n][m] != 0:
-                    print('Неудача! Корабли не могут соприкасаться.')
+                    # print('Неудача! Корабли не могут соприкасаться.')
                     return False
             ship_coord[(i, j)] = ship_len
             if is_horizontal:
@@ -148,6 +154,78 @@ def fill_in_field(field: list, one_cell: int, two_cells: int, three_cells: int, 
     return True
 
 
+def fill_in_fields(fields: list, one_cell: int, two_cells: int, three_cells: int, four_cells: int):
+    """ Заполняет все игровые поля кораблями
+
+    :param fields: Список игровых полей
+    :param one_cell: Количество кораблей из одной клетки
+    :param two_cells: Количество кораблей из двух клеток
+    :param three_cells: Количество кораблей из трёх клеток
+    :param four_cells: Количество кораблей из четырёх клеток
+    :return:
+    """
+    N = len(fields)
+    for i in range(N):
+        fill_in_field(fields[i], one_cell, two_cells, three_cells, four_cells)
+
+
 def shot(field: list, coord: tuple):
+    """Проверяет выстрел на попадание и сохраняет результат выстрела в игровом поле
+
+    :param field: Игровое поле по которому стреляют
+    :param coord: Координата выстрела
+    :return: True или False (Попадание или Промах)
+    """
     i_coord, j_coord = coord_utoa(*coord)
-    return field[i_coord][j_coord] in [1, 2, 3, 4]
+    result_shot = field[i_coord][j_coord] in [1, 2, 3, 4]
+    field[i_coord][j_coord] = 'X' if result_shot else chr(664)
+    return result_shot
+
+
+def coordinate_processing(field: list, coord: list):
+    """Проверка валидации введённых координат
+
+    :param field: Игровое поле текущего игрока
+    :param coord: Координаты введённые игроком
+    :return: True или False (Валидные ли координаты)
+    """
+    if len(coord) == 2 and coord[0].isalpha() and coord[0] in get_alphabet()[:len(field)]:
+        if coord[1].isdigit() and 1 <= int(coord[1]) <= len(field):
+            return True
+    else:
+        return False
+
+
+def start_game(fields: list, players: int):
+    """ Старт игры. Игроки поочерёдно вводят координаты выстрелов. Функция проверяет попадание в противника
+
+    :param fields: Список игровых полей
+    :param players: Количество игроков
+    :return: Ничего не возвращает
+    """
+    play = True
+    while play:
+        for p in range(players):
+            while True:
+                coord = input(f'player {p+1}\nВведите координаты выстрела. Например: А 2: ').split()
+                if coordinate_processing(fields[p], coord):
+                    break
+                print('\nВведите корректные координаты.\n')
+            i_coord, j_coord = coord
+            shot_player = shot(fields[p], (i_coord, int(j_coord)))
+            if shot_player:
+                print(choice(['Попадание!', 'Враг в огне.', 'Меткий выстрел.']))
+                count = 0
+                for row in fields[p]:
+                    for item in row:
+                        if item in [1, 2, 3, 4]:
+                            count += 1
+                            break
+                if count == 0:
+                    play = False
+                    draw_fields(fields)
+                    print('Враг уничтожен! Игра окончена.')
+                    break
+            else:
+                print(choice(['Мимо.', 'Промах.', 'В следующий раз целься лучше.']))
+            draw_fields(fields)
