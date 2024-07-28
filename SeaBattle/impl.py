@@ -133,17 +133,17 @@ def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool)
     return True
 
 
-def fill_in_field(field: list, one_cell: int, two_cells: int, three_cells: int, four_cells: int):
+def fill_in_field(field: list, four_cells: int, three_cells: int, two_cells: int, one_cell: int):
     """ Заполняет игровое поле кораблями
 
     :param field: Игровое поле, которое будет заполнено кораблями
-    :param one_cell: Количество кораблей из одной клетки
-    :param two_cells: Количество кораблей из двух клеток
-    :param three_cells: Количество кораблей из трёх клеток
     :param four_cells: Количество кораблей из четырёх клеток
-    :return:
+    :param three_cells: Количество кораблей из трёх клеток
+    :param two_cells: Количество кораблей из двух клеток
+    :param one_cell: Количество кораблей из одной клетки
+    :return: True поле заполнено кораблями
     """
-    ships = {1: one_cell, 2: two_cells, 3: three_cells, 4: four_cells}
+    ships = {4: four_cells,  3: three_cells, 2: two_cells, 1: one_cell}
     for ship_len, number_ships in ships.items():
         while number_ships:
             N = len(field)
@@ -155,19 +155,19 @@ def fill_in_field(field: list, one_cell: int, two_cells: int, three_cells: int, 
     return True
 
 
-def fill_in_fields(fields: list, one_cell: int, two_cells: int, three_cells: int, four_cells: int):
+def fill_in_fields(fields: list, four_cells: int, three_cells: int, two_cells: int, one_cell: int):
     """ Заполняет все игровые поля кораблями
 
     :param fields: Список игровых полей
-    :param one_cell: Количество кораблей из одной клетки
-    :param two_cells: Количество кораблей из двух клеток
-    :param three_cells: Количество кораблей из трёх клеток
     :param four_cells: Количество кораблей из четырёх клеток
+    :param three_cells: Количество кораблей из трёх клеток
+    :param two_cells: Количество кораблей из двух клеток
+    :param one_cell: Количество кораблей из одной клетки
     :return:
     """
     N = len(fields)
     for i in range(N):
-        fill_in_field(fields[i], one_cell, two_cells, three_cells, four_cells)
+        fill_in_field(fields[i], four_cells, three_cells, two_cells, one_cell)
 
 
 def shot(field: list, coord: tuple):
