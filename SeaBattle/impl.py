@@ -24,7 +24,8 @@ def get_cell_symbol(value):
     :param value: Значение из ячейки игрового поля
     :return: Значение, которое будет принимать ячейка игрового поля
     """
-    return chr(183) if value == 0 else value
+    return chr(183) if type(value) == int else value  # Режим невидимки
+    # return chr(183) if value == 0 else value  # Режим "Глаз Бога"
 
 
 def draw_fields(fields):
@@ -182,7 +183,7 @@ def shot(field: list, coord: tuple):
     return result_shot
 
 
-def coordinate_processing(field: list, coord: list):
+def coordinate_processing(field: list, coord: tuple):
     """Проверка валидации введённых координат
 
     :param field: Игровое поле текущего игрока
@@ -196,6 +197,44 @@ def coordinate_processing(field: list, coord: list):
         return False
 
 
+def presence_enemy(field: list):
+    """ Проверка наличия врага на игровом поле
+
+    :param field: Текущее игровое поле
+    :return: True или False (наличие врага на поле)
+    """
+    count = 0
+    for row in field:
+        for item in row:
+            if item in [1, 2, 3, 4]:
+                count += 1
+                break
+    return bool(count)
+
+
+def wounding_enemy(field: list, coord: tuple):
+    """ Проверка ранения или уничтожения врага
+
+    :param field: Текущее игровое поле
+    :param coord: Координаты выстрела
+    :return: True или False (ранен или убит)
+    """
+    i_coord, j_coord = coord_utoa(*coord)
+    N = len(field)
+    tmp = []
+    for i in (i_coord - 1, i_coord + 1):
+        if 0 <= i < N:
+            tmp.append((i, j_coord))
+    for j in (j_coord - 1, j_coord + 1):
+        if 0 <= j < N:
+            tmp.append((i_coord, j))
+    for item in tmp:
+        i, j = item
+        if field[i][j] in [1, 2, 3, 4]:
+            return True
+    return False
+
+
 def start_game(fields: list, players: int):
     """ Старт игры. Игроки поочерёдно вводят координаты выстрелов. Функция проверяет попадание в противника
 
@@ -203,29 +242,31 @@ def start_game(fields: list, players: int):
     :param players: Количество игроков
     :return: Ничего не возвращает
     """
-    play = True
-    while play:
+    while True:
         for p in range(players):
             while True:
-                coord = input(f'player {p+1}\nВведите координаты выстрела. Например: А 2: ').split()
+                coord = tuple(input(f'player {p+1}\nВведите координаты выстрела. Например: А 2: ').split())
+                if coord[0].lower() == 'стоп':
+                    print('Игра остановлена.')
+                    return False
                 if coordinate_processing(fields[p], coord):
                     break
                 print('\nВведите корректные координаты.\n')
             i_coord, j_coord = coord
-            shot_player = shot(fields[p], (i_coord, int(j_coord)))
+            coord = (i_coord, int(j_coord))
+            shot_player = shot(fields[p], coord)
             if shot_player:
-                print(choice(['Попадание!', 'Враг в огне.', 'Меткий выстрел.']))
-                count = 0
-                for row in fields[p]:
-                    for item in row:
-                        if item in [1, 2, 3, 4]:
-                            count += 1
-                            break
-                if count == 0:
-                    play = False
+                print('\n' + choice(['Попадание!', 'Враг в огне.', 'Меткий выстрел.']))
+
+                # Проверка на ранение или уничтожение корабля
+                print('Корабль подбит.' if wounding_enemy(fields[p], coord) else 'Корабль уничтожен')
+
+                # Проверка, все ли корабли уничтожены
+                if not presence_enemy(fields[p]):
                     draw_fields(fields)
                     print('Враг уничтожен! Игра окончена.')
-                    break
+                    return False
+
             else:
-                print(choice(['Мимо.', 'Промах.', 'В следующий раз целься лучше.']))
+                print('\n' + choice(['Мимо.', 'Промах.', 'В следующий раз целься лучше.']))
             draw_fields(fields)
