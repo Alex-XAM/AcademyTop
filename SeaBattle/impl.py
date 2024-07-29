@@ -178,7 +178,9 @@ def shot(field: list, coord: tuple):
     :return: True или False (Попадание или Промах)
     """
     i_coord, j_coord = coord_utoa(*coord)
-    result_shot = field[i_coord][j_coord] in [1, 2, 3, 4]
+    result_shot = field[i_coord][j_coord] in [1, 2, 3, 4, 'X']
+    if field[i_coord][j_coord] == 'X':
+        print('\nА говорят, что в одну воронку снаряд не попадает дважды!')
     field[i_coord][j_coord] = 'X' if result_shot else chr(664)
     return result_shot
 
