@@ -1,5 +1,11 @@
 from random import randint, choice
 
+EMPTY = 0  # Пустая ячейка
+SHIP = 1  # Ячейка с кораблём
+MISS = 5  # Удар мимо
+HIT = 6  # Попадание в корабль
+NEAR = 7  # Окресность корабля
+
 
 def init_fields(fields_number, side):
     """Создаёт два игровых поля и заполняет все ячейки нулями.
@@ -95,6 +101,19 @@ def coord_atou(i, j):
     return get_alphabet()[i], j + 1
 
 
+def is_on_field(field: list, i, j):
+    """ Проверяет, находится ли клетка с координатами (i, j) в пределах игрового поля
+
+    :return:
+    """
+    return True
+
+
+def get_near_coords(i, j) -> list:
+    """ Возвращает список кортежей координат ячеек в окресности заданной ячейки"""
+    return [(i-1, j-1), (), (), (), (), (), (), ()]
+
+
 def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool) -> bool:
     """Добавляет корабль на игровое поле, если функция выполнилась успешно.
 
@@ -186,7 +205,7 @@ def shot(field: list, coord: tuple):
 
 
 def coordinate_processing(field: list, coord: tuple):
-    """Проверка валидации введённых координат
+    """Проверка валидации координат введённые пользователем
 
     :param field: Игровое поле текущего игрока
     :param coord: Координаты введённые игроком
