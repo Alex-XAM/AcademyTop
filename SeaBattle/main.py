@@ -11,6 +11,6 @@ fill_in_fields(fields, 1, 2, 3, 4)
 print('\nКорабли готовы к бою.')
 print('Для продолжения игры введите координаты выстрела.\nДля завершения игры введите СТОП\n')
 
-# draw_fields(fields)  # Для отрисовки кораблей в impl.py функцию get_cell_symbol(value) переключить в режим "Глаз Бога"
+draw_fields(fields)
 
 start_game(fields, number_players)
