@@ -5,6 +5,7 @@ SHIP = 1  # Ячейка с кораблём
 MISS = 5  # Удар мимо
 HIT = 6  # Попадание в корабль
 NEAR = 7  # Окрестность корабля
+cheat_code = False
 
 
 def init_fields(fields_number, side) -> list:
@@ -31,16 +32,16 @@ def get_cell_symbol(value):
     :return: Значение, которое будет принимать ячейка игрового поля
     """
     cell_display = None
-    if value == EMPTY:
+    if value in (EMPTY, NEAR):
         cell_display = chr(183)
-    elif value == SHIP:
+    elif value == SHIP and cheat_code:
         cell_display = '#'
+    elif value == SHIP:
+        cell_display = chr(183)
     elif value == MISS:
         cell_display = chr(664)
     elif value == HIT:
         cell_display = 'X'
-    elif value == NEAR:
-        cell_display = '-'
     return cell_display
 
 
@@ -79,7 +80,7 @@ def draw_fields(fields):
 
 
 def get_alphabet() -> list:
-    """ Создаёт список букв русского алфавита в верхнем регистре, кроме букв Ё и Й
+    """Создаёт список букв русского алфавита в верхнем регистре, кроме букв Ё и Й
 
     :return: Список букв русского алфавита
     """
@@ -121,7 +122,7 @@ def is_on_field(field: list, i, j) -> bool:
 
 
 def get_near_coords(i, j) -> list:
-    """ Возвращает список кортежей координат ячеек в окрестности проверяемой ячейки"""
+    """Возвращает список кортежей координат ячеек в окрестности проверяемой ячейки"""
     return [(i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1)]
 
 
@@ -158,7 +159,7 @@ def add_ship(field: list, ship_len: int, head_coord: tuple, is_horizontal: bool)
 
 
 def fill_in_field(field: list, four_cells: int, three_cells: int, two_cells: int, one_cell: int) -> bool:
-    """ Заполняет игровое поле кораблями
+    """Заполняет игровое поле кораблями
 
     :param field: Игровое поле, которое будет заполнено кораблями
     :param four_cells: Количество кораблей из четырёх клеток
@@ -180,7 +181,7 @@ def fill_in_field(field: list, four_cells: int, three_cells: int, two_cells: int
 
 
 def fill_in_fields(fields: list, four_cells: int, three_cells: int, two_cells: int, one_cell: int):
-    """ Заполняет все игровые поля кораблями
+    """Заполняет все игровые поля кораблями
 
     :param fields: Список игровых полей
     :param four_cells: Количество кораблей из четырёх клеток
@@ -224,7 +225,7 @@ def checking_validity_of_coord(field: list, coord: str) -> bool:
 
 
 def presence_enemy(field: list) -> bool:
-    """ Проверка наличия врага на игровом поле
+    """Проверка наличия врага на игровом поле
 
     :param field: Текущее игровое поле
     :return: True или False (наличие врага на поле)
@@ -239,7 +240,7 @@ def presence_enemy(field: list) -> bool:
 
 
 def wounding_enemy(field: list, coord: tuple) -> bool:
-    """ Проверка ранения или уничтожения врага
+    """Проверка ранения или уничтожения врага
 
     :param field: Текущее игровое поле
     :param coord: Координаты выстрела
@@ -254,8 +255,31 @@ def wounding_enemy(field: list, coord: tuple) -> bool:
     return False
 
 
+def input_coord(fields: list, player: int) -> str:
+    """Принимает от игрока строку, проверяет на cheat_code, на СТОП игры и на соответствие координатам
+
+    :param fields: Список игровых полей
+    :param player: Номер игрока
+    :return: Пустую строку или строку с координатами
+    """
+    global cheat_code
+    while True:
+        coord = input(f'player {player + 1}\nВведите координаты выстрела. Например: А2: ')
+        if coord.lower() == 'абракадабра':
+            cheat_code = True
+            print('\nВключен режим "Глаз Бога"')
+            draw_fields(fields)
+            continue
+        if coord.lower() == 'стоп':
+            print('Игра остановлена.')
+            return ''
+        if checking_validity_of_coord(fields[player], coord):
+            return coord
+        print('\nВведите корректные координаты.\n')
+
+
 def start_game(fields: list, players: int):
-    """ Старт игры. Игроки поочерёдно вводят координаты выстрелов. Функция проверяет попадание в противника
+    """Старт игры. Игроки поочерёдно вводят координаты выстрелов. Функция проверяет попадание в противника
 
     :param fields: Список игровых полей
     :param players: Количество игроков
@@ -263,16 +287,14 @@ def start_game(fields: list, players: int):
     """
     while True:
         for p in range(players):
-            while True:
-                coord = input(f'player {p+1}\nВведите координаты выстрела. Например: А2: ')
-                if coord.lower() == 'стоп':
-                    print('Игра остановлена.')
-                    return False
-                if checking_validity_of_coord(fields[p], coord):
-                    break
-                print('\nВведите корректные координаты.\n')
 
-            coord = (coord[0], int(coord[1:]))
+            # Получение координат выстрела
+            str_coord = input_coord(fields, p)
+            if not str_coord:
+                return False  # Игра остановлена
+            coord = (str_coord[0], int(str_coord[1:]))
+
+            # Получение результата выстрела
             shot_player = shot(fields[p], coord)
             if shot_player:
                 print('\n' + choice(['Попадание!', 'Враг в огне.', 'Меткий выстрел.']))
